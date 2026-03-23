@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum Role {
+  user
+  admin
+  seller
+}
+model User {
+  id                     String                 @id @default(uuid())
+  name                   String
+  email                  String                 @unique
+  emailVerified          DateTime?              @map("email_verified")
+  image                  String?
+  phone                  String?
+  password               String?
+  role                   Role                 @default(user)
+  banned                 Boolean                @default(false)
+  banReason              String?                @map("ban_reason")
+  banExpiresAt           DateTime?              @map("ban_expires_at")
+  history                String                 @default("") @db.VarChar(400)
+  createdAt              DateTime               @default(now()) @map("created_at")
+  updatedAt              DateTime               @updatedAt @map("updated_at")
+  Product                Products[]
+  Servicos               Servicos[]
+}
+model Products {
+  id String @id @default(uuid())
+  name String
+  userId String
+  description String
+  price Float
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  categoryId String
+
+  category Category @relation(fields: [categoryId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+model Servicos {
+  id String @id @default(uuid())
+  name String
+  userId String
+  description String
+  price Float
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  categoryId String
+
+  category Category @relation(fields: [categoryId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+model Category {
+  id String @id @default(uuid())
+  name String
+  description String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  products Products[]
+  servicos Servicos[]
+}
