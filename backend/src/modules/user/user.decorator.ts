@@ -7,3 +7,13 @@ export const User = createParamDecorator(
         return data ? user[data] : user
     }
 );
+////como usar:
+/*@UseGuards(AuthGuard, RolesGuard, PermissionsGuard)
+
+@Roles(Role.ADMIN)
+@Permissions(Permission.CREATE_PRODUCT)
+
+@Post()
+createProduct(@CurrentUser() user) {
+  return this.service.create();
+}*/
