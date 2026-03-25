@@ -16,7 +16,7 @@ export class RegisterDto {
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @Post('login')
+  @Post('/login')
   async login(@Body() dto: LoginDto) {
     const user = await this.authService.validateUser(
       dto.email,
@@ -25,7 +25,7 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @Post('register')
+  @Post('/register')
   async register(@Body() dto: RegisterDto) {
     return this.authService.register(dto.email, dto.name, dto.password);
   }

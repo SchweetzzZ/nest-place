@@ -16,14 +16,18 @@ export class UpdateServicosDto extends PartialType(CreateServicosDto) { }
 export class ServicosService {
     constructor(private prisma: PrismaService) { }
 
-    async create(data: CreateServicosDto) {
-        const cerifyCategory = await this.prisma.category.findUnique({
+    async create(data: CreateServicosDto, userId: string) {
+        const verifyCategory = await this.prisma.category.findUnique({
             where: { id: data.categoryId }
         })
-        if (!cerifyCategory) throw new Error("Category not found")
-        return this.prisma.servicos.create({
-            data
+        if (!verifyCategory) throw new Error("Category not found")
+        const createServico = await this.prisma.servicos.create({
+            data: {
+                ...data,
+                userId
+            }
         })
+        return createServico
     }
     async update(id: string, data: UpdateServicosDto) {
         const verifyCategory = await this.prisma.category.findUnique({

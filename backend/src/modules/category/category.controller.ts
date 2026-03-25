@@ -5,7 +5,7 @@ import { CategoryService, CreateCategoryDto, UpdateCategoryDto } from './categor
 export class CategoryController {
     constructor(private readonly category: CategoryService) { }
 
-    @Post()
+    @Post('/')
     async create(@Body() dto: CreateCategoryDto) {
         return this.category.create(dto)
     }

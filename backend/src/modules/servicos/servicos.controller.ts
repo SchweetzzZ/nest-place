@@ -1,15 +1,17 @@
 import { Controller, Post, Body, Param, Put, Delete, Get } from '@nestjs/common';
 import { CreateServicosDto, UpdateServicosDto } from './servicos.service';
 import { ServicosService } from './servicos.service';
+import { User } from '../user/user.decorator';
 
 @Controller('servicos')
 export class ServicosController {
     constructor(private readonly servicos: ServicosService) { }
 
-    @Post()
-    async create(@Body() dto: CreateServicosDto) {
+    @Post('/')
+    async create(@Body() dto: CreateServicosDto, @User() user: any) {
         return this.servicos.create(
-            dto
+            dto,
+            user.id
         )
     }
 
