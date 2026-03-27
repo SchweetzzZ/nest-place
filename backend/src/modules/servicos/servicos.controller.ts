@@ -1,14 +1,15 @@
 import { Controller, Post, Body, Param, Put, Delete, Get, UseGuards } from '@nestjs/common';
-import { CreateServicosDto, UpdateServicosDto } from './servicos.service';
 import { ServicosService } from './servicos.service';
 import { User } from '../user/user.decorator';
-import { Roles } from '../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { Role } from '../common/enums/role.enums';
-import { PermissionsGuard } from '../common/guards/permissions.guard';
-import { Permissions as PermissionEnums } from '../common/enums/permissions.enums';
 import { Permissions } from '../common/decorators/permissions.decorator';
+import { Permissions as PermissionsEnums } from '../common/enums/permissions.enums';
+import { zodBody } from '../common/decorators/zod-body.decorator';
+import { createServicoSchema, updateServicoSchema } from '../servicos/schemas/create-servicos.schema';
+import type { createServicoDto, updateServicoDto } from '../servicos/schemas/create-servicos.schema';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enums';
+
 
 
 @Controller('servicos')
@@ -16,10 +17,10 @@ export class ServicosController {
     constructor(private readonly servicos: ServicosService) { }
 
     @Post('/')
-    @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
-    @Roles(Role.ADMIN)
-    @Permissions(PermissionEnums.SERVICOS.CREATE)
-    async create(@Body() dto: CreateServicosDto, @User() user: any) {
+    @UseGuards(JwtAuthGuard)
+    @Roles(Role.SELLER, Role.ADMIN)
+    @Permissions(PermissionsEnums.SERVICOS.CREATE)
+    async create(@zodBody(createServicoSchema) dto: createServicoDto, @User() user: any) {
         return this.servicos.create(
             dto,
             user.id
@@ -27,11 +28,17 @@ export class ServicosController {
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() dto: UpdateServicosDto) {
+    @UseGuards(JwtAuthGuard)
+    @Roles(Role.SELLER, Role.ADMIN)
+    @Permissions(PermissionsEnums.SERVICOS.UPDATE)
+    async(@Param('id') id: string, @zodBody(updateServicoSchema) dto: updateServicoDto) {
         return this.servicos.update(id, dto)
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    @Roles(Role.SELLER, Role.ADMIN)
+    @Permissions(PermissionsEnums.SERVICOS.DELETE)
     async delete(@Param('id') id: string) {
         return this.servicos.delete(id)
     }

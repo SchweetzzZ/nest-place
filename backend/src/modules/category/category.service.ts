@@ -13,18 +13,24 @@ export class UpdateCategoryDto extends PartialType(CreateCategoryDto) { }
 export class CategoryService {
     constructor(private prisma: PrismaService) { }
 
-    async create(data: CreateCategoryDto) {
+    async create(data: CreateCategoryDto, userId: string) {
         return this.prisma.category.create({
-            data
+            data: {
+                ...data,
+                userId
+            }
         })
     }
-    async update(id: string, data: UpdateCategoryDto) {
+    async update(id: string, data: UpdateCategoryDto, userId: string) {
         return this.prisma.category.update({
             where: { id },
-            data
+            data: {
+                ...data,
+                userId
+            }
         })
     }
-    async delete(id: string) {
+    async delete(id: string, userId: string) {
         return this.prisma.category.delete({
             where: { id }
         })

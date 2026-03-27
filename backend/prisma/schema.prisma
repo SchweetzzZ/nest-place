@@ -29,6 +29,7 @@ model User {
   Product                Products[]
   Servicos               Servicos[]
   Comments               Comments[]
+  Category               Category[]
 }
 model Products {
   id String @id @default(uuid())
@@ -64,6 +65,9 @@ model Category {
   description String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  userId String
+
+  user User @relation(fields: [userId], references: [id])
 
   products Products[]
   servicos Servicos[]
@@ -72,12 +76,12 @@ model Comments {
   id String @id @default(uuid())
   comment String
   userId String
-  productId String
-  serviceId String
+  productId String?
+  serviceId String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
-  product Products @relation(fields: [productId], references: [id])
-  service Servicos @relation(fields: [serviceId], references: [id])
+  product Products? @relation(fields: [productId], references: [id])
+  service Servicos? @relation(fields: [serviceId], references: [id])
 }

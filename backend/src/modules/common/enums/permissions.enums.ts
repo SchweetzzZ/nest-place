@@ -10,5 +10,11 @@ export const Permissions = {
         READ: 'read:servicos',
         UPDATE: 'update:servicos',
         DELETE: 'delete:servicos',
+    },
+    CATEGORY: {
+        CREATE: 'create:category',
+        READ: 'read:category',
+        UPDATE: 'update:category',
+        DELETE: 'delete:category',
     }
 } as const

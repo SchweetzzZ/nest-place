@@ -4,8 +4,8 @@ import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateCommentDto {
     comment!: string;
-    productId!: string;
-    serviceId!: string;
+    productId?: string;
+    serviceId?: string;
 }
 
 export class UpdateCommentDto extends PartialType(CreateCommentDto) { }
@@ -21,24 +21,30 @@ export class CommentsService {
         if (!data.productId && !data.serviceId) {
             throw new Error("Deve enviar um produto ou um serviço")
         }
+
         if (data.productId) {
             const verifyProd = await this.prisma.products.findUnique({
                 where: { id: data.productId }
             })
             if (!verifyProd) throw new Error("Produto não encontrado")
         }
+
         if (data.serviceId) {
             const verifyServ = await this.prisma.servicos.findUnique({
                 where: { id: data.serviceId }
             })
             if (!verifyServ) throw new Error("Serviço não encontrado")
         }
+
         const comment = await this.prisma.comments.create({
             data: {
-                ...data,
-                userId
+                comment: data.comment,
+                userId,
+                productId: data.productId,
+                serviceId: data.serviceId,
             }
         })
+
         if (!comment) {
             throw new Error("Erro ao criar comentario")
         }

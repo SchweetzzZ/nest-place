@@ -1,16 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
-import { Prisma } from "@prisma/client";
-import { PartialType } from "@nestjs/mapped-types";
-
-export class CreateProductDto {
-    name!: string;
-    description!: string;
-    categoryId!: string;
-    price!: number;
-}
-export class UpdateProductDto extends PartialType(CreateProductDto) { }
-
+import type { CreateProductDto, UpdateProductDto } from "./schemas/create-product.schema";
 
 @Injectable()
 export class ProductServices {

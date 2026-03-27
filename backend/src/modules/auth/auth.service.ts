@@ -2,6 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { Permissions } from '../common/enums/permissions.enums';
+import { Role } from '../common/enums/role.enums';
 
 @Injectable()
 export class AuthService {
@@ -41,10 +43,36 @@ export class AuthService {
         const payload = {
             username: user.email,
             sub: user.id,
-            role: user.role
+            role: user.role,
+            permissions: this.getPermissionsByRole(user.role)
         };
         return {
             access_token: this.jwtService.sign(payload),
         };
     }
-}
+
+    private getPermissionsByRole(role: Role): string[] {
+        const allPermissions: string[] = [
+            ...Object.values(Permissions.PRODUCT),
+            ...Object.values(Permissions.SERVICOS),
+            ...Object.values(Permissions.CATEGORY),
+        ];
+
+        if (role === Role.ADMIN) {
+            return allPermissions;
+        }
+
+        if (role === Role.SELLER) {
+            return [
+                ...Object.values(Permissions.PRODUCT),
+                ...Object.values(Permissions.SERVICOS),
+            ];
+        }
+
+        return [
+            Permissions.PRODUCT.READ,
+            Permissions.SERVICOS.READ,
+            Permissions.CATEGORY.READ,
+        ];
+    }
+}

@@ -6,7 +6,6 @@ export class CreateServicosDto {
     name: string
     description: string
     price: number
-    userId: string
     categoryId: string
 }
 
