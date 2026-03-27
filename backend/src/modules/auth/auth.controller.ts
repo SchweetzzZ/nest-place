@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import express from 'express';
 
 export class LoginDto {
   email!: string;
@@ -17,12 +18,24 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('/login')
-  async login(@Body() dto: LoginDto) {
+  async login(@Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: express.Response) {
+
     const user = await this.authService.validateUser(
       dto.email,
       dto.password
     );
-    return this.authService.login(user);
+
+    const token = await this.authService.login(user);
+
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',//strict, lax, none
+    })
+    return {
+      accessToken: token,
+    }
   }
 
   @Post('/register')
