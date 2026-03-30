@@ -11,6 +11,10 @@ enum Role {
   admin
   seller
 }
+enum ItemType {
+  product
+  service
+}
 model User {
   id                     String                 @id @default(uuid())
   name                   String
@@ -26,10 +30,12 @@ model User {
   history                String                 @default("") @db.VarChar(400)
   createdAt              DateTime               @default(now()) @map("created_at")
   updatedAt              DateTime               @updatedAt @map("updated_at")
+  
   Product                Products[]
   Servicos               Servicos[]
   Comments               Comments[]
   Category               Category[]
+  Favorite               Favorite[]
 }
 model Products {
   id String @id @default(uuid())
@@ -84,4 +90,18 @@ model Comments {
   user User @relation(fields: [userId], references: [id])
   product Products? @relation(fields: [productId], references: [id])
   service Servicos? @relation(fields: [serviceId], references: [id])
+}
+model Favorite {
+  id String @id @default(uuid())
+  userId String
+  itemId String
+  itemType ItemType
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references:[id])
+
+  @@index([userId], name: "favorite_user_idx")
+  @@index([itemId, itemType], name: "favorite_item_idx")
+
+  @@unique([userId, itemId, itemType], name: "favorite_unique")
 }

@@ -15,6 +15,11 @@ import { Permissions as PermissionEnums } from '../common/enums/permissions.enum
 export class ProductsController {
     constructor(private readonly products: ProductServices) { }
 
+    @Get('/teste')
+    async teste() {
+        return "teste da silva"
+    }
+
     @Post('/')
     @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
     @Roles(Role.SELLER, Role.ADMIN)

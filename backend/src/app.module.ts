@@ -11,6 +11,9 @@ import { CategoryModule } from './modules/category/category.module';
 import { CommentsController } from './modules/comments/comments.controller';
 import { CommentsService } from './modules/comments/comments.service';
 import { CommentsModule } from './modules/comments/comments.module';
+import { FavoriteController } from './modules/favorite/favorite.controller';
+import { FavoriteService } from './modules/favorite/favorite.service';
+import { FavoriteModule } from './modules/favorite/favorite.module';
 
 @Module({
   imports: [
@@ -19,9 +22,9 @@ import { CommentsModule } from './modules/comments/comments.module';
     UsersModule,
     ProductsModule,
     ServicosModule,
-    PrismaModule, CategoryModule, CommentsModule
+    PrismaModule, CategoryModule, CommentsModule, FavoriteModule
   ],
-  controllers: [AppController, CommentsController],
-  providers: [AppService, CommentsService],
+  controllers: [AppController, CommentsController, FavoriteController],
+  providers: [AppService, CommentsService, FavoriteService],
 })
 export class AppModule { }
