@@ -1,21 +1,14 @@
 import { Injectable } from "@nestjs/common"
 import { PartialType } from "@nestjs/mapped-types"
 import { PrismaService } from "prisma/prisma.service"
-
-export class CreateServicosDto {
-    name: string
-    description: string
-    price: number
-    categoryId: string
-}
-
-export class UpdateServicosDto extends PartialType(CreateServicosDto) { }
+import { S3Service } from "../lib/s3/s3.service"
+import { createServicoDto, updateServicoDto } from "./schemas/create-servicos.schema"
 
 @Injectable()
 export class ServicosService {
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService, private s3Service: S3Service) { }
 
-    async create(data: CreateServicosDto, userId: string) {
+    async create(data: createServicoDto, userId: string) {
         const verifyCategory = await this.prisma.category.findUnique({
             where: { id: data.categoryId }
         })
@@ -28,11 +21,17 @@ export class ServicosService {
         })
         return createServico
     }
-    async update(id: string, data: UpdateServicosDto) {
+    async update(id: string, data: updateServicoDto) {
         const verifyCategory = await this.prisma.category.findUnique({
             where: { id: data.categoryId }
         })
         if (!verifyCategory) throw new Error("Category not found")
+        if (data.images) {
+            const currentImages = await this.prisma.servicos.findMany({
+                where: { id }
+            })
+            for
+        }
         return this.prisma.servicos.update({
             where: { id },
             data

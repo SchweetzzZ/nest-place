@@ -47,6 +47,7 @@ model Products {
   updatedAt DateTime @updatedAt @map("updated_at")
   categoryId String
   comments Comments[]
+  products_images products_images[]
 
   category Category @relation(fields: [categoryId], references: [id])
   user User @relation(fields: [userId], references: [id])
@@ -61,6 +62,7 @@ model Servicos {
   updatedAt DateTime @updatedAt @map("updated_at")
   categoryId String
   comments Comments[]
+  servicos_images servicos_images[]
 
   category Category @relation(fields: [categoryId], references: [id])
   user User @relation(fields: [userId], references: [id])
@@ -104,4 +106,26 @@ model Favorite {
   @@index([itemId, itemType], name: "favorite_item_idx")
 
   @@unique([userId, itemId, itemType], name: "favorite_unique")
+}
+model products_images {
+  id String @id @default(uuid())
+  productId String
+  imageUrl String
+  imageKey String
+  position Int @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product Products @relation(fields: [productId], references: [id])
+}
+model servicos_images {
+  id String @id @default(uuid())
+  serviceId String
+  imageUrl String
+  imageKey String
+  position Int @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  service Servicos @relation(fields: [serviceId], references: [id])
 }
