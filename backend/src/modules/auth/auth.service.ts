@@ -36,7 +36,6 @@ export class AuthService {
                 name,
             }
         })
-
     }
 
     async login(user: any) {
@@ -75,4 +74,4 @@ export class AuthService {
             Permissions.CATEGORY.READ,
         ];
     }
-}
+}

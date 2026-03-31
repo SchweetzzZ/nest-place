@@ -70,8 +70,9 @@ export class ProductServices {
                         productId: id,
                         imageUrl: img.imageUrl,
                         imageKey: img.imageKey,
-                        position: index
-                    }))
+                        position: index,
+                    })),
+                    skipDuplicates: true
                 })
             }
             return updateProd;

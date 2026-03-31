@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common"
-import { PartialType } from "@nestjs/mapped-types"
 import { PrismaService } from "prisma/prisma.service"
 import { S3Service } from "../lib/s3/s3.service"
 import { createServicoDto, updateServicoDto } from "./schemas/create-servicos.schema"
@@ -22,24 +21,60 @@ export class ServicosService {
         return createServico
     }
     async update(id: string, data: updateServicoDto) {
-        const verifyCategory = await this.prisma.category.findUnique({
-            where: { id: data.categoryId }
-        })
-        if (!verifyCategory) throw new Error("Category not found")
-        if (data.images) {
-            const currentImages = await this.prisma.servicos.findMany({
-                where: { id }
+        return await this.prisma.$transaction(async (tx) => {
+            const verifyCategory = await this.prisma.category.findUnique({
+                where: { id: data.categoryId }
             })
-            for
-        }
-        return this.prisma.servicos.update({
-            where: { id },
-            data
+            if (!verifyCategory) throw new Error("Category not found")
+
+            if (data.images) {
+                const currentImages = await this.prisma.servicos_images.findMany({
+                    where: { serviceId: id }
+                })
+                const newSet = new Set(data.images.map(img => img.imageKey))
+
+                for (const img of currentImages) {
+                    if (!newSet.has(img.imageKey)) {
+                        await this.s3Service.deleteObject(img.imageKey)
+                    }
+                }
+                await tx.servicos_images.deleteMany({
+                    where: {
+                        serviceId: id,
+                        imageKey: {
+                            notIn: data.images.map(img => img.imageKey)
+                        }
+                    }
+                })
+                await tx.servicos_images.createMany({
+                    data: data.images.map((img, index) => ({
+                        serviceId: id,
+                        imageUrl: img.imageUrl,
+                        imageKey: img.imageKey,
+                        position: index,
+                    })),
+                    skipDuplicates: true
+                })
+
+            }
+            return this.prisma.servicos.update({
+                where: { id },
+                data
+            })
         })
     }
     async delete(id: string) {
-        return this.prisma.servicos.delete({
-            where: { id }
+        return await this.prisma.$transaction(async (tx) => {
+            const verifyImages = await tx.servicos_images.findMany({
+                where: { serviceId: id }
+            })
+            for (const img of verifyImages) {
+                await this.s3Service.deleteObject(img.imageKey)
+            }
+            const deleteServ = await tx.servicos.delete({
+                where: { id }
+            })
+            return deleteServ
         })
     }
     async getAll() {

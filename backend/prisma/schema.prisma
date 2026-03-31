@@ -15,6 +15,11 @@ enum ItemType {
   product
   service
 }
+enum RequestStatus {
+  pending
+  approved
+  rejected
+}
 model User {
   id                     String                 @id @default(uuid())
   name                   String
@@ -36,6 +41,7 @@ model User {
   Comments               Comments[]
   Category               Category[]
   Favorite               Favorite[]
+  sellerRequest          SellerRequest[]
 }
 model Products {
   id String @id @default(uuid())
@@ -128,4 +134,37 @@ model servicos_images {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   service Servicos @relation(fields: [serviceId], references: [id])
+}
+model SellerRequest {
+  id String @id @default(uuid())
+  userId String
+  storeName String
+  description String
+  phone String
+  cpf String @unique
+  status RequestStatus
+  handleBy String?
+  handleAt DateTime?
+  adminFeedBack String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sellerRequestImages SellerRequestImages[]
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "seller_request_user_idx")
+}
+model SellerRequestImages {
+  id String @id @default(uuid())
+  sellerRequestId String
+  imageKey String
+  imageUrl String
+  position Int @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sellerRequest SellerRequest @relation(fields: [sellerRequestId], references: [id])
+
+  @@index([sellerRequestId], name: "seller_request_images_seller_request_idx")
 }
