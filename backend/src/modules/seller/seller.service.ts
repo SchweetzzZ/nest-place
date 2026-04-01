@@ -14,12 +14,12 @@ export class SellerService {
             })
             if (!verifyUser) throw new UnauthorizedException("User not found")
 
-            if (verifyUser.role !== "user") throw new Error("User is not a user")
+            if (verifyUser.role !== "user") throw new Error("only user can be a seller")
 
             const verifySeller = await tx.sellerRequest.findFirst({
                 where: { userId, status: "pending" }
             })
-            if (verifySeller) throw new Error("User already a seller")
+            if (verifySeller) throw new Error("you already have a seller request pending")
 
             const createSeller = await tx.sellerRequest.create({
                 data: {
@@ -63,13 +63,24 @@ export class SellerService {
         const request = await this.prisma.sellerRequest.findUnique({
             where: { id },
             include: {
-                sellerRequestImages: true,
                 user: {
                     select: {
                         id: true,
                         name: true,
                         email: true,
                         phone: true,
+                    }
+                },
+                sellerRequestImages: {
+                    orderBy: {
+                        position: "asc"
+                    }
+                },
+                handledByUser: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
                     }
                 }
             }
@@ -82,9 +93,24 @@ export class SellerService {
 
     async getAll() {
         return await this.prisma.sellerRequest.findMany({
+            orderBy: {
+                createdAt: "desc"
+            },
             include: {
-                sellerRequestImages: true,
                 user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        phone: true,
+                    }
+                },
+                sellerRequestImages: {
+                    orderBy: {
+                        position: "asc"
+                    }
+                },
+                handledByUser: {
                     select: {
                         id: true,
                         name: true,
@@ -95,4 +121,3 @@ export class SellerService {
         })
     }
 }
-

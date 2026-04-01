@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ServicosController } from './servicos.controller';
 import { ServicosService } from './servicos.service';
-import { S3Service } from '../lib/s3/s3.service';
+import { S3Module } from '../lib/s3/s3.module';
 
 @Module({
-  imports: [S3Service],
+  imports: [S3Module],
   controllers: [ServicosController],
   providers: [ServicosService]
 })

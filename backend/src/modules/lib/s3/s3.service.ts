@@ -5,7 +5,6 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 @Injectable()
 export class S3Service {
     private readonly logger = new Logger(S3Service.name)
-
     private readonly s3Client = new S3Client({
         region: process.env.AWS_REGION,
         credentials: {

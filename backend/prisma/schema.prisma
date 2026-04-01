@@ -42,6 +42,7 @@ model User {
   Category               Category[]
   Favorite               Favorite[]
   sellerRequest          SellerRequest[]
+  handledRequests        SellerRequest[] @relation("AdminHandledRequests")
 }
 model Products {
   id String @id @default(uuid())
@@ -143,7 +144,7 @@ model SellerRequest {
   phone String
   cpf String @unique
   status RequestStatus
-  handleBy String?
+  handleById String?
   handleAt DateTime?
   adminFeedBack String?
   createdAt DateTime @default(now()) @map("created_at")
@@ -152,6 +153,8 @@ model SellerRequest {
   sellerRequestImages SellerRequestImages[]
 
   user User @relation(fields: [userId], references: [id])
+ handledByUser User? @relation("AdminHandledRequests", fields: [handleById], references: [id])
+
 
   @@index([userId], name: "seller_request_user_idx")
 }
